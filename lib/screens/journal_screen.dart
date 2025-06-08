@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 
@@ -76,124 +77,130 @@ class _JournalScreenState extends State<JournalScreen> {
     const primaryColor = Color(0xFF673AB7); // Deep Purple
     final backgroundColor = primaryColor.withOpacity(0.05);
     
-    return Scaffold(
+    return CupertinoPageScaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: const Text(
-          'Journal',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        backgroundColor: primaryColor,
-        elevation: 0,
-        centerTitle: true,
-        actions: [
-          if (_searchQuery.isNotEmpty || _selectedTagFilter != null || _selectedMoodFilter != null)
-            IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: _clearFilters,
-              tooltip: 'Clear filters',
-            ),
-        ],
-      ),
-      body: Column(
+      child: Stack(
         children: [
-          // Search and Filter Section
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Search Bar
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search your journal...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+          Column(
+            children: [
+              // Search and Filter Section
+              Container(
+                color: CupertinoColors.white,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    // Search Bar
+                    CupertinoSearchTextField(
+                      controller: _searchController,
+                      placeholder: 'Search your journal...',
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                        });
+                      },
                     ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 12),
-                
-                // Filter Chips
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      // Tag Filters
-                      ..._allTags.map((tag) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: FilterChip(
-                          label: Text('#$tag'),
-                          selected: _selectedTagFilter == tag,
-                          onSelected: (selected) {
-                            setState(() {
-                              _selectedTagFilter = selected ? tag : null;
-                            });
-                          },
-                          selectedColor: primaryColor.withOpacity(0.3),
+                    const SizedBox(height: 12),
+                    
+                    // Clear Filters Button
+                    if (_searchQuery.isNotEmpty || _selectedTagFilter != null || _selectedMoodFilter != null)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: CupertinoButton(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          onPressed: _clearFilters,
+                          child: const Text('Clear Filters'),
                         ),
-                      )),
-                      
-                      // Mood Filters
-                      ...Mood.values.map((mood) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: FilterChip(
-                          label: Text(_getMoodEmoji(mood)),
-                          selected: _selectedMoodFilter == mood,
-                          onSelected: (selected) {
-                            setState(() {
-                              _selectedMoodFilter = selected ? mood : null;
-                            });
-                          },
-                          selectedColor: primaryColor.withOpacity(0.3),
-                        ),
-                      )),
-                    ],
-                  ),
+                      ),
+                    
+                    // Filter Chips
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          // Tag Filters
+                          ..._allTags.map((tag) => Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: CupertinoButton(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              color: _selectedTagFilter == tag ? primaryColor.withOpacity(0.3) : CupertinoColors.systemGrey6,
+                              onPressed: () {
+                                setState(() {
+                                  _selectedTagFilter = _selectedTagFilter == tag ? null : tag;
+                                });
+                              },
+                              child: Text(
+                                '#$tag',
+                                style: TextStyle(
+                                  color: _selectedTagFilter == tag ? CupertinoColors.white : CupertinoColors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          )),
+                          
+                          // Mood Filters
+                          ...Mood.values.map((mood) => Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: CupertinoButton(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              color: _selectedMoodFilter == mood ? primaryColor.withOpacity(0.3) : CupertinoColors.systemGrey6,
+                              onPressed: () {
+                                setState(() {
+                                  _selectedMoodFilter = _selectedMoodFilter == mood ? null : mood;
+                                });
+                              },
+                              child: Text(
+                                _getMoodEmoji(mood),
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          )),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+              
+              // Journal Entries List
+              Expanded(
+                child: _filteredEntries.isEmpty
+                    ? _buildEmptyState(primaryColor)
+                    : ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                        itemCount: _filteredEntries.length,
+                        itemBuilder: (context, index) {
+                          final entry = _filteredEntries[index];
+                          return JournalEntryCard(
+                            entry: entry,
+                            isExpanded: _expandedEntryId == entry.id,
+                            onTap: () {
+                              setState(() {
+                                _expandedEntryId = _expandedEntryId == entry.id ? null : entry.id;
+                              });
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+          Positioned(
+            bottom: 30,
+            right: 16,
+            child: CupertinoButton.filled(
+              onPressed: () => _showNewEntryDialog(context),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(CupertinoIcons.add, color: CupertinoColors.white),
+                  SizedBox(width: 8),
+                  Text('New Entry', style: TextStyle(color: CupertinoColors.white)),
+                ],
+              ),
             ),
           ),
-          
-          // Journal Entries List
-          Expanded(
-            child: _filteredEntries.isEmpty
-                ? _buildEmptyState(primaryColor)
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _filteredEntries.length,
-                    itemBuilder: (context, index) {
-                      final entry = _filteredEntries[index];
-                      return JournalEntryCard(
-                        entry: entry,
-                        isExpanded: _expandedEntryId == entry.id,
-                        onTap: () {
-                          setState(() {
-                            _expandedEntryId = _expandedEntryId == entry.id ? null : entry.id;
-                          });
-                        },
-                      );
-                    },
-                  ),
-          ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showNewEntryDialog(context),
-        icon: const Icon(Icons.add),
-        label: const Text('New Entry'),
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 
@@ -107,92 +108,98 @@ class _GoalsScreenState extends State<GoalsScreen> {
     const primaryColor = Color(0xFFFFC107); // Golden Amber
     final backgroundColor = primaryColor.withOpacity(0.05);
     
-    return Scaffold(
+    return CupertinoPageScaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: const Text(
-          'Goals',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
-        ),
-        backgroundColor: primaryColor,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Active Goals Section
-            if (_activeGoals.isEmpty)
-              _buildEmptyState(primaryColor)
-            else
-              ...[
-                const Text(
-                  'Active Goals',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                ..._activeGoals.map((goal) => GoalCard(
-                  goal: goal,
-                  onTap: () => _showGoalDetails(goal),
-                )),
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Active Goals Section
+                if (_activeGoals.isEmpty)
+                  _buildEmptyState(primaryColor)
+                else
+                  ...[
+                    const Text(
+                      'Active Goals',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    ..._activeGoals.map((goal) => GoalCard(
+                      goal: goal,
+                      onTap: () => _showGoalDetails(goal),
+                    )),
+                  ],
+                
+                const SizedBox(height: 24),
+                
+                // Completed Goals Section
+                if (_completedGoals.isNotEmpty) ...[
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => setState(() => _showCompleted = !_showCompleted),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: CupertinoColors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: CupertinoColors.systemGrey.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            _showCompleted ? CupertinoIcons.chevron_up : CupertinoIcons.chevron_down,
+                            color: primaryColor,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Completed Goals (${_completedGoals.length})',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: CupertinoColors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (_showCompleted) ...[
+                    const SizedBox(height: 16),
+                    ..._completedGoals.map((goal) => GoalCard(
+                      goal: goal,
+                      onTap: () => _showGoalDetails(goal),
+                    )),
+                  ],
+                ],
               ],
-            
-            const SizedBox(height: 24),
-            
-            // Completed Goals Section
-            if (_completedGoals.isNotEmpty) ...[
-              InkWell(
-                onTap: () => setState(() => _showCompleted = !_showCompleted),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        _showCompleted ? Icons.expand_less : Icons.expand_more,
-                        color: primaryColor,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Completed Goals (${_completedGoals.length})',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            ),
+          ),
+          Positioned(
+            bottom: 30,
+            right: 16,
+            child: CupertinoButton.filled(
+              onPressed: () => _showAddGoalDialog(context),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(CupertinoIcons.add, color: CupertinoColors.white),
+                  SizedBox(width: 8),
+                  Text('Add Goal', style: TextStyle(color: CupertinoColors.white)),
+                ],
               ),
-              if (_showCompleted) ...[
-                const SizedBox(height: 16),
-                ..._completedGoals.map((goal) => GoalCard(
-                  goal: goal,
-                  onTap: () => _showGoalDetails(goal),
-                )),
-              ],
-            ],
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddGoalDialog(context),
-        icon: const Icon(Icons.add),
-        label: const Text('Add Goal'),
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.black87,
+            ),
+          ),
+        ],
       ),
     );
   }

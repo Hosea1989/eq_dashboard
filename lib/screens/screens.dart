@@ -3,4 +3,7 @@ export 'dashboard_screen.dart';
 export 'budget_screen.dart';
 export 'goals_screen.dart';
 export 'habits_screen.dart';
-export 'journal_screen.dart'; 
+export 'journal_screen.dart';
+export 'credit_repair_screen.dart';
+export 'debt_management_screen.dart';
+export 'fitness_screen.dart'; 

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 
@@ -85,64 +86,67 @@ class _HabitsScreenState extends State<HabitsScreen> {
     const primaryColor = Color(0xFFFF7043); // Energy Orange
     final backgroundColor = primaryColor.withOpacity(0.05);
     
-    return Scaffold(
+    return CupertinoPageScaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: const Text(
-          'Habits',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        backgroundColor: primaryColor,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Today's Progress Overview
-            _buildTodaysOverview(primaryColor),
-            const SizedBox(height: 20),
-            
-            // Today's Habits
-            if (_todaysHabits.isNotEmpty) ...[
-              const Text(
-                'Today\'s Habits',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Today's Progress Overview
+                _buildTodaysOverview(primaryColor),
+                const SizedBox(height: 20),
+                
+                // Today's Habits
+                if (_todaysHabits.isNotEmpty) ...[
+                  const Text(
+                    'Today\'s Habits',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  ..._todaysHabits.map((habit) => HabitCard(
+                    habit: habit,
+                    onToggle: () => _toggleHabitCompletion(habit),
+                    showToday: true,
+                  )),
+                  const SizedBox(height: 24),
+                ],
+                
+                // All Active Habits
+                if (_activeHabits.isNotEmpty) ...[
+                  const Text(
+                    'All Habits',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  ..._activeHabits.map((habit) => HabitCard(
+                    habit: habit,
+                    onToggle: () => _toggleHabitCompletion(habit),
+                    showToday: false,
+                  )),
+                ] else
+                  _buildEmptyState(primaryColor),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 30,
+            right: 16,
+            child: CupertinoButton.filled(
+              onPressed: () => _showAddHabitDialog(context),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(CupertinoIcons.add, color: CupertinoColors.white),
+                  SizedBox(width: 8),
+                  Text('Add Habit', style: TextStyle(color: CupertinoColors.white)),
+                ],
               ),
-              const SizedBox(height: 16),
-              ..._todaysHabits.map((habit) => HabitCard(
-                habit: habit,
-                onToggle: () => _toggleHabitCompletion(habit),
-                showToday: true,
-              )),
-              const SizedBox(height: 24),
-            ],
-            
-            // All Active Habits
-            if (_activeHabits.isNotEmpty) ...[
-              const Text(
-                'All Habits',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              ..._activeHabits.map((habit) => HabitCard(
-                habit: habit,
-                onToggle: () => _toggleHabitCompletion(habit),
-                showToday: false,
-              )),
-            ] else
-              _buildEmptyState(primaryColor),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddHabitDialog(context),
-        icon: const Icon(Icons.add),
-        label: const Text('Add Habit'),
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }

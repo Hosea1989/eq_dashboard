@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'screens/screens.dart';
 import 'utils/theme_manager.dart';
@@ -18,136 +19,31 @@ class _BudgetAppState extends State<BudgetApp> {
   Widget build(BuildContext context) {
     final themeData = AppThemeManager.themeData;
     
-    return MaterialApp(
-      title: 'Neurodivergent-Friendly Budget Tracker',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: themeData.primaryColor,
-          brightness: Brightness.light,
-          primary: themeData.primaryColor,
-          secondary: themeData.secondaryColor,
-          surface: themeData.surfaceColor,
-          background: themeData.backgroundColor,
-          error: themeData.errorColor,
-        ),
-        useMaterial3: true,
-        
-        // Accessibility improvements
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        
-        // Card theme
-        cardTheme: CardThemeData(
-          color: themeData.cardColor,
-          elevation: themeData.elevation,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(themeData.borderRadius),
-            side: BorderSide(color: themeData.borderColor, width: 1),
-          ),
-        ),
-        
-        // Input decoration theme
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: themeData.surfaceColor,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(themeData.borderRadius),
-            borderSide: BorderSide(color: themeData.borderColor),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(themeData.borderRadius),
-            borderSide: BorderSide(color: themeData.borderColor),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(themeData.borderRadius),
-            borderSide: BorderSide(color: themeData.primaryColor, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(themeData.borderRadius),
-            borderSide: BorderSide(color: themeData.errorColor),
-          ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        ),
-        
-        // Elevated button theme
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: themeData.primaryColor,
-            foregroundColor: Colors.white,
-            elevation: themeData.elevation,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(themeData.borderRadius),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            textStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        
-        // Text theme with better readability
-        textTheme: TextTheme(
-          headlineLarge: TextStyle(
-            color: themeData.textPrimary,
-            fontWeight: FontWeight.bold,
-            fontSize: 32,
-          ),
-          headlineMedium: TextStyle(
-            color: themeData.textPrimary,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-          headlineSmall: TextStyle(
-            color: themeData.textPrimary,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-          bodyLarge: TextStyle(
+    return CupertinoApp(
+      title: 'Equilibrium Dashboard',
+      theme: CupertinoThemeData(
+        primaryColor: themeData.primaryColor,
+        primaryContrastingColor: CupertinoColors.white,
+        scaffoldBackgroundColor: themeData.backgroundColor,
+        barBackgroundColor: themeData.primaryColor,
+        textTheme: CupertinoTextThemeData(
+          primaryColor: themeData.textPrimary,
+          textStyle: TextStyle(
             color: themeData.textPrimary,
             fontSize: 16,
           ),
-          bodyMedium: TextStyle(
-            color: themeData.textPrimary,
-            fontSize: 14,
+          navTitleTextStyle: const TextStyle(
+            color: CupertinoColors.white,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
           ),
-          bodySmall: TextStyle(
-            color: themeData.textSecondary,
-            fontSize: 12,
-          ),
-        ),
-        
-        // App bar theme
-        appBarTheme: AppBarTheme(
-          backgroundColor: themeData.primaryColor,
-          foregroundColor: Colors.white,
-          elevation: themeData.elevation,
-          centerTitle: true,
-          titleTextStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
+          navLargeTitleTextStyle: const TextStyle(
+            color: CupertinoColors.white,
+            fontSize: 34,
             fontWeight: FontWeight.bold,
           ),
         ),
-        
-        // Floating action button theme
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: themeData.primaryColor,
-          foregroundColor: Colors.white,
-          elevation: themeData.elevation,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(themeData.borderRadius),
-          ),
-        ),
-        
-        // Snackbar theme
-        snackBarTheme: SnackBarThemeData(
-          backgroundColor: themeData.primaryColor,
-          contentTextStyle: const TextStyle(color: Colors.white),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(themeData.borderRadius),
-          ),
-          behavior: SnackBarBehavior.floating,
-        ),
+        brightness: Brightness.light,
       ),
       home: const MainScreen(),
       debugShowCheckedModeBanner: false,
